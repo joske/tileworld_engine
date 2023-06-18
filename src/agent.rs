@@ -5,7 +5,7 @@ use crate::{
     State,
 };
 use bracket_lib::prelude::*;
-use log::{debug, info};
+use log::{debug, info, warn};
 use rand::Rng;
 
 pub(crate) struct Agent {
@@ -48,6 +48,8 @@ impl Agent {
                         grid.set(new_tile);
                         self.state = AgentState::MoveToHole;
                     }
+                } else {
+                    warn!("Agent {}: No tile found", self.id);
                 }
             }
             AgentState::MoveToHole => {
@@ -60,8 +62,10 @@ impl Agent {
                         closest.borrow_mut().location = new_hole;
                         grid.set(new_hole);
                         self.state = AgentState::MoveToTile;
-                        debug!("Agent {}: Score: {}", self.id, self.score);
+                        info!("Agent {}: Score: {}", self.id, self.score);
                     }
+                } else {
+                    warn!("Agent {}: No hole found", self.id);
                 }
             }
         }
@@ -73,9 +77,10 @@ impl Agent {
         }
         if let Some(mut path) = astar(grid, self.location, to) {
             if path.len() == 0 {
+                warn!("Agent {}: No path found", self.id);
                 return false;
             }
-            info!("Agent {}: Path: {:?}", self.id, path);
+            debug!("Agent {}: Path: {:?}", self.id, path);
             let direction = path.pop().unwrap();
             let next = self.location.next_location(direction);
             self.location = next;

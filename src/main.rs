@@ -72,6 +72,7 @@ impl State {
 }
 
 fn main() -> BError {
+    env_logger::init();
     let context = BTermBuilder::simple80x50()
         .with_title("Tileworld")
         .with_fps_cap(30.0)
