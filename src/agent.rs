@@ -1,14 +1,19 @@
 use crate::{
+    astar::astar,
+    grid::Grid,
     location::{closest, Located, Location},
     State,
 };
 use bracket_lib::prelude::*;
+use log::{debug, info};
+use rand::Rng;
 
 pub(crate) struct Agent {
     id: u8,
     pub(crate) location: Location,
     pub(crate) state: AgentState,
     score: u32,
+    tile_score: Option<u8>,
 }
 
 pub(crate) enum AgentState {
@@ -23,25 +28,62 @@ impl Agent {
             location,
             state: AgentState::MoveToTile,
             score: 0,
+            tile_score: None,
         }
     }
 
     pub(crate) fn update(&mut self, state: &State) {
+        let mut grid = state.grid.borrow_mut();
         match self.state {
             AgentState::MoveToTile => {
                 if let Some(closest) = closest(self.location, &state.tiles) {
-                    self.move_to(closest.location());
+                    debug!("Agent {}: Closest tile: {:?}", self.id, closest.borrow());
+                    let arrived = self.move_to(&mut grid, closest.borrow().location());
+                    if arrived {
+                        self.tile_score = Some(closest.borrow().score);
+                        grid.remove(self.location);
+                        let new_tile = grid.random_location();
+                        closest.borrow_mut().location = new_tile;
+                        closest.borrow_mut().score = rand::thread_rng().gen_range(1..5);
+                        grid.set(new_tile);
+                        self.state = AgentState::MoveToHole;
+                    }
                 }
             }
             AgentState::MoveToHole => {
                 if let Some(closest) = closest(self.location, &state.holes) {
-                    self.move_to(closest.location());
+                    let arrived = self.move_to(&mut grid, closest.borrow().location());
+                    if arrived {
+                        self.score += self.tile_score.unwrap() as u32;
+                        self.tile_score = None;
+                        let new_hole = grid.random_location();
+                        closest.borrow_mut().location = new_hole;
+                        grid.set(new_hole);
+                        self.state = AgentState::MoveToTile;
+                        debug!("Agent {}: Score: {}", self.id, self.score);
+                    }
                 }
             }
         }
     }
 
-    fn move_to(&mut self, location: Location) {}
+    fn move_to(&mut self, grid: &mut Grid, to: Location) -> bool {
+        if self.location == to {
+            return true;
+        }
+        if let Some(mut path) = astar(grid, self.location, to) {
+            if path.len() == 0 {
+                return false;
+            }
+            info!("Agent {}: Path: {:?}", self.id, path);
+            let direction = path.pop().unwrap();
+            let next = self.location.next_location(direction);
+            self.location = next;
+            grid.remove(self.location);
+            grid.set(self.location);
+        }
+        false
+    }
 
     pub(crate) fn render(&self, ctx: &mut BTerm) {
         let color = match self.id {

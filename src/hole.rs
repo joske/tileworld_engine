@@ -2,7 +2,7 @@ use crate::location::{Located, Location};
 use bracket_lib::prelude::*;
 
 pub(crate) struct Hole {
-    location: Location,
+    pub(crate) location: Location,
 }
 
 impl Located for Hole {
@@ -26,7 +26,7 @@ impl Hole {
             self.location.row,
             BLACK,
             WHITE,
-            to_cp437('*'),
+            to_cp437('O'),
         );
     }
 }

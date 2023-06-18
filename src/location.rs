@@ -1,3 +1,5 @@
+use std::{cell::RefCell, rc::Rc};
+
 use crate::{COLS, ROWS};
 
 #[derive(Hash, PartialEq, Eq, Debug, Clone, Copy)]
@@ -78,15 +80,18 @@ impl Location {
     }
 }
 
-pub(crate) fn closest<T: Located>(our: Location, list: &Vec<T>) -> Option<&T> {
+pub(crate) fn closest<T: Located>(
+    our: Location,
+    list: &Vec<Rc<RefCell<T>>>,
+) -> Option<Rc<RefCell<T>>> {
     let mut closest = None;
     let mut closest_distance = u16::MAX;
-    for o in list.iter() {
-        let loc = o.location();
+    for o in list.into_iter() {
+        let loc = o.borrow().location();
         let dist = our.distance(loc);
         if dist < closest_distance {
             closest_distance = dist;
-            closest = Some(o);
+            closest = Some(o.clone());
         }
     }
     closest

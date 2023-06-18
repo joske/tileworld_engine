@@ -1,8 +1,9 @@
 use crate::location::{Located, Location};
 use bracket_lib::prelude::*;
 
+#[derive(Debug)]
 pub(crate) struct Tile {
-    location: Location,
+    pub(crate) location: Location,
     pub(crate) score: u8,
 }
 

@@ -1,4 +1,4 @@
-use bracket_lib::random::RandomNumberGenerator;
+use rand::Rng;
 
 use crate::{location::Location, COLS, ROWS};
 
@@ -30,14 +30,15 @@ impl Grid {
         self.occupancy[index].is_none()
     }
 
-    pub fn random_location(&self, rng: &mut RandomNumberGenerator) -> Location {
-        let mut c: u16 = rng.range(0, COLS);
-        let mut r: u16 = rng.range(0, ROWS);
+    pub fn random_location(&self) -> Location {
+        let mut rng = rand::thread_rng();
+        let mut c: u16 = rng.gen_range(0..COLS);
+        let mut r: u16 = rng.gen_range(0..ROWS);
 
         let mut new_loc = Location::new(c, r);
         while !self.is_free(new_loc) {
-            c = rng.range(0, COLS);
-            r = rng.range(0, ROWS);
+            c = rng.gen_range(0..COLS);
+            r = rng.gen_range(0..ROWS);
             new_loc = Location::new(c, r);
         }
         new_loc
@@ -45,7 +46,8 @@ impl Grid {
 }
 
 mod tests {
-    use super::*;
+
+    use crate::{grid::Grid, location::Location};
 
     #[test]
     fn test_grid() {
