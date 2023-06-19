@@ -1,17 +1,18 @@
 use bracket_lib::terminal::*;
 
 use crate::agent::Agent;
+use crate::grid::Grid;
 use crate::hole::Hole;
 use crate::obstacle::Obstacle;
 use crate::tile::Tile;
-use crate::{grid, NUM_AGENTS, NUM_HOLES, NUM_OBSTACLES, NUM_TILES};
+use crate::{NUM_AGENTS, NUM_HOLES, NUM_OBSTACLES, NUM_TILES};
 use rand::Rng;
 use std::cell::RefCell;
 use std::rc::Rc;
 
 pub(crate) struct State {
     frame_time: f32,
-    pub grid: Rc<RefCell<grid::Grid>>,
+    pub grid: Rc<RefCell<Grid>>,
     pub agents: Vec<Rc<RefCell<Agent>>>,
     pub tiles: Vec<Rc<RefCell<Tile>>>,
     pub holes: Vec<Rc<RefCell<Hole>>>,
@@ -31,7 +32,7 @@ impl GameState for State {
 impl State {
     pub(crate) fn new() -> Self {
         let mut rng = rand::thread_rng();
-        let mut grid = grid::Grid::new();
+        let mut grid = Grid::new();
         let mut agents = Vec::new();
         for i in 0..NUM_AGENTS as u8 {
             let location = grid.random_location();

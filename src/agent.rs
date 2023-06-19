@@ -87,11 +87,13 @@ impl Agent {
             debug!("Agent {}: Path: {:?}", self.id, path);
             let direction = path.pop().unwrap();
             let next = self.location.next_location(direction);
-            grid.remove(self.location);
-            self.location = next;
-            grid.set(self.location);
-            if next == to {
-                return true;
+            if grid.is_free(next) || next == to {
+                grid.remove(self.location);
+                self.location = next;
+                grid.set(self.location);
+                if next == to {
+                    return true;
+                }
             }
         } else {
             warn!("Agent {}: No path found", self.id);
