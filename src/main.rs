@@ -10,8 +10,8 @@ mod obstacle;
 mod state;
 mod tile;
 
-const COLS: u16 = 80;
-const ROWS: u16 = 50;
+const COLS: u16 = 40;
+const ROWS: u16 = 40;
 const NUM_AGENTS: u8 = 6;
 const NUM_TILES: u8 = 20;
 const NUM_HOLES: u8 = 20;
@@ -19,7 +19,7 @@ const NUM_OBSTACLES: u8 = 20;
 
 fn main() -> BError {
     env_logger::init();
-    let context = BTermBuilder::simple80x50()
+    let context = BTermBuilder::simple(COLS, ROWS)?
         .with_title("Tileworld")
         .with_fps_cap(30.0)
         .build()?;
