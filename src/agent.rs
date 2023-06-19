@@ -75,12 +75,10 @@ impl Agent {
                 }
             }
         }
+        grid.print_grid();
     }
 
     fn move_to(&mut self, grid: &mut Grid, to: Location) -> bool {
-        if self.location == to {
-            return true;
-        }
         if let Some(mut path) = astar(grid, self.location, to) {
             if path.len() == 0 {
                 warn!("Agent {}: empty path", self.id);
@@ -89,9 +87,12 @@ impl Agent {
             debug!("Agent {}: Path: {:?}", self.id, path);
             let direction = path.pop().unwrap();
             let next = self.location.next_location(direction);
-            self.location = next;
             grid.remove(self.location);
+            self.location = next;
             grid.set(self.location);
+            if next == to {
+                return true;
+            }
         } else {
             warn!("Agent {}: No path found", self.id);
         }
