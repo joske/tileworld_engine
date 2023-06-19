@@ -83,7 +83,7 @@ impl Agent {
         }
         if let Some(mut path) = astar(grid, self.location, to) {
             if path.len() == 0 {
-                warn!("Agent {}: No path found", self.id);
+                warn!("Agent {}: empty path", self.id);
                 return false;
             }
             debug!("Agent {}: Path: {:?}", self.id, path);
@@ -92,6 +92,8 @@ impl Agent {
             self.location = next;
             grid.remove(self.location);
             grid.set(self.location);
+        } else {
+            warn!("Agent {}: No path found", self.id);
         }
         false
     }
