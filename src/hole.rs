@@ -1,6 +1,7 @@
 use crate::location::{Located, Location};
 use bracket_lib::prelude::*;
 
+#[derive(Debug)]
 pub(crate) struct Hole {
     pub(crate) location: Location,
 }

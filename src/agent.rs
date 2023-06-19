@@ -16,6 +16,7 @@ pub(crate) struct Agent {
     tile_score: Option<u8>,
 }
 
+#[derive(Debug)]
 pub(crate) enum AgentState {
     MoveToTile,
     MoveToHole,
@@ -33,11 +34,15 @@ impl Agent {
     }
 
     pub(crate) fn update(&mut self, state: &State) {
+        info!(
+            "Agent {}: Location: {:?} state: {:?}",
+            self.id, self.location, self.state
+        );
         let mut grid = state.grid.borrow_mut();
         match self.state {
             AgentState::MoveToTile => {
                 if let Some(closest) = closest(self.location, &state.tiles) {
-                    debug!("Agent {}: Closest tile: {:?}", self.id, closest.borrow());
+                    info!("Agent {}: Closest tile: {:?}", self.id, closest.borrow());
                     let arrived = self.move_to(&mut grid, closest.borrow().location());
                     if arrived {
                         self.tile_score = Some(closest.borrow().score);
@@ -54,6 +59,7 @@ impl Agent {
             }
             AgentState::MoveToHole => {
                 if let Some(closest) = closest(self.location, &state.holes) {
+                    info!("Agent {}: Closest hole: {:?}", self.id, closest.borrow());
                     let arrived = self.move_to(&mut grid, closest.borrow().location());
                     if arrived {
                         self.score += self.tile_score.unwrap() as u32;
