@@ -67,6 +67,7 @@ impl Grid {
     }
 }
 
+#[cfg(test)]
 mod tests {
 
     use crate::{grid::Grid, location::Location};
