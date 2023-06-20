@@ -84,16 +84,14 @@ impl Agent {
                 warn!("Agent {}: empty path", self.id);
                 return false;
             }
-            debug!("Agent {}: Path: {:?}", self.id, path);
-            let direction = path.pop().unwrap();
+            info!("Agent {}: Path: {:?}", self.id, path);
+            let direction = path.remove(0); // guaranteed to have at least one element
             let next = self.location.next_location(direction);
-            if grid.is_free(next) || next == to {
-                grid.remove(self.location);
-                self.location = next;
-                grid.set(self.location);
-                if next == to {
-                    return true;
-                }
+            grid.remove(self.location);
+            self.location = next;
+            grid.set(self.location);
+            if next == to {
+                return true;
             }
         } else {
             warn!("Agent {}: No path found", self.id);
@@ -108,8 +106,8 @@ impl Agent {
             2 => BLUE,
             3 => CYAN,
             4 => MAGENTA,
-            5 => YELLOW,
-            _ => WHITE,
+            5 => PLUM,
+            _ => BLACK,
         };
         ctx.set(
             self.location.col,
