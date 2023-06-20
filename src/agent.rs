@@ -2,10 +2,10 @@ use crate::{
     astar::astar,
     grid::Grid,
     location::{closest, Located, Location},
-    State,
+    State, COLS,
 };
 use bracket_lib::prelude::*;
-use log::{debug, info, warn};
+use log::{debug, warn};
 use rand::Rng;
 
 pub(crate) struct Agent {
@@ -34,7 +34,7 @@ impl Agent {
     }
 
     pub(crate) fn update(&mut self, state: &State) {
-        info!(
+        debug!(
             "Agent {}: Location: {:?} state: {:?}",
             self.id, self.location, self.state
         );
@@ -42,7 +42,7 @@ impl Agent {
         match self.state {
             AgentState::MoveToTile => {
                 if let Some(closest) = closest(self.location, &state.tiles) {
-                    info!("Agent {}: Closest tile: {:?}", self.id, closest.borrow());
+                    debug!("Agent {}: Closest tile: {:?}", self.id, closest.borrow());
                     let arrived = self.move_to(&mut grid, closest.borrow().location());
                     if arrived {
                         self.tile_score = Some(closest.borrow().score);
@@ -59,7 +59,7 @@ impl Agent {
             }
             AgentState::MoveToHole => {
                 if let Some(closest) = closest(self.location, &state.holes) {
-                    info!("Agent {}: Closest hole: {:?}", self.id, closest.borrow());
+                    debug!("Agent {}: Closest hole: {:?}", self.id, closest.borrow());
                     let arrived = self.move_to(&mut grid, closest.borrow().location());
                     if arrived {
                         self.score += self.tile_score.unwrap() as u32;
@@ -68,14 +68,16 @@ impl Agent {
                         closest.borrow_mut().location = new_hole;
                         grid.set(new_hole);
                         self.state = AgentState::MoveToTile;
-                        info!("Agent {}: Score: {}", self.id, self.score);
+                        debug!("Agent {}: Score: {}", self.id, self.score);
                     }
                 } else {
                     warn!("Agent {}: No hole found", self.id);
                 }
             }
         }
-        grid.print_grid();
+        if log::log_enabled!(log::Level::Debug) {
+            grid.print_grid();
+        }
     }
 
     fn move_to(&mut self, grid: &mut Grid, to: Location) -> bool {
@@ -84,7 +86,7 @@ impl Agent {
                 warn!("Agent {}: empty path", self.id);
                 return false;
             }
-            info!("Agent {}: Path: {:?}", self.id, path);
+            debug!("Agent {}: Path: {:?}", self.id, path);
             let direction = path.remove(0); // guaranteed to have at least one element
             let next = self.location.next_location(direction);
             grid.remove(self.location);
@@ -109,12 +111,20 @@ impl Agent {
             5 => PLUM,
             _ => BLACK,
         };
+        let c = if self.tile_score.is_some() { 'Å' } else { 'A' };
         ctx.set(
             self.location.col,
             self.location.row,
             color,
             WHITE,
-            to_cp437('A'),
+            to_cp437(c),
+        );
+        ctx.print_color(
+            COLS + 3,
+            self.id as u16 + 3,
+            color,
+            WHITE,
+            &format!("Agent {}: {}", self.id, self.score),
         );
     }
 }

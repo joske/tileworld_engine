@@ -19,7 +19,7 @@ const NUM_OBSTACLES: u8 = 20;
 
 fn main() -> BError {
     env_logger::init();
-    let context = BTermBuilder::simple(COLS, ROWS)?
+    let context = BTermBuilder::simple(COLS + 20, ROWS)?
         .with_title("Tileworld")
         .with_fps_cap(30.0)
         .build()?;

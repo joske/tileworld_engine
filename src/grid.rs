@@ -1,4 +1,4 @@
-use log::info;
+use log::debug;
 use rand::Rng;
 
 use crate::{location::Location, COLS, ROWS};
@@ -17,13 +17,13 @@ impl Grid {
     pub(crate) fn set(&mut self, location: Location) {
         let index = (location.row as usize * COLS as usize + location.col as usize) as usize;
         self.occupancy[index] = Some(());
-        info!("set {:?}: count={}", location, self.count());
+        debug!("set {:?}: count={}", location, self.count());
     }
 
     pub(crate) fn remove(&mut self, location: Location) {
         let index = (location.row as usize * COLS as usize + location.col as usize) as usize;
         self.occupancy[index] = None;
-        info!("remove {:?}: count={}", location, self.count());
+        debug!("remove {:?}: count={}", location, self.count());
     }
 
     pub(crate) fn is_free(&self, location: Location) -> bool {
