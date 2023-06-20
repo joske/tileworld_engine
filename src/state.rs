@@ -22,7 +22,7 @@ pub(crate) struct State {
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
         self.frame_time += ctx.frame_time_ms;
-        if self.frame_time > 1000.0 / 3.0 {
+        if self.frame_time > 1000.0 / 5.0 {
             self.frame_time = 0.0;
             self.update(ctx);
         }
