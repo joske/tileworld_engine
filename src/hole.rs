@@ -22,12 +22,6 @@ impl Hole {
     }
 
     pub(crate) fn render(&self, ctx: &mut BTerm) {
-        ctx.set(
-            self.location.col,
-            self.location.row,
-            BLACK,
-            WHITE,
-            to_cp437('O'),
-        );
+        ctx.set(self.location.col, self.location.row, BLACK, WHITE, 9);
     }
 }

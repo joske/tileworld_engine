@@ -111,14 +111,8 @@ impl Agent {
             5 => PLUM,
             _ => BLACK,
         };
-        let c = if self.tile_score.is_some() { 'Å' } else { 'A' };
-        ctx.set(
-            self.location.col,
-            self.location.row,
-            color,
-            WHITE,
-            to_cp437(c),
-        );
+        let c: u16 = if self.tile_score.is_some() { 219 } else { 254 };
+        ctx.set(self.location.col, self.location.row, color, WHITE, c);
         ctx.print_color(
             COLS + 3,
             self.id as u16 + 3,
